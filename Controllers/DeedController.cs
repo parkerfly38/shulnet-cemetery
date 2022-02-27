@@ -33,4 +33,40 @@ public class DeedController : Controller
         viewModel.Sections = sections.ToList() ?? new List<Section>();
         return View(viewModel);
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EditDeed(Deed deed)
+    {
+        try {
+            if (deed.id > 0)
+            {
+                _dataRepo.UpdateDeed(deed);
+            } else {
+                _dataRepo.AddDeed(deed);
+            }
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "DeedController.EditDeed: {0}", exception.Message);
+            return Json( new { status = "error", message = exception.Message });
+        }
+        return Json( new { status = "success", message = "Success" });
+    }
+
+    [HttpDelete]
+    [Route("/Deed/{deedid}")]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteDeed(int deedid)
+    {
+        try {
+            _dataRepo.DeleteDeed(deedid);
+        }
+        catch(Exception exception)
+        {
+            _logger.LogError(exception, "DeedController.DeleteDeed: {0}", exception.Message);
+            return Json(new { status = "error", message="Failed to delete deed"});
+        }
+        return Json(new {status="success", message="Success"});
+    }
 }
