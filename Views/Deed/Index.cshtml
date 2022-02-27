@@ -1,0 +1,168 @@
+@using PagedList.Core;
+@using PagedList.Core.Mvc;
+
+@model DeedViewModel
+@{
+    ViewData["Title"] = "Deeds";
+}
+<div class="container-fluid">
+    <pager class="pager-container" list="@Model.Deeds" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index" asp-controller="Deed"></pager>
+    <table class="table table-responsive table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Issue Date</th>
+                <th>Deedholder #1</th>
+                <th>Deedholder #2</th>
+                <th>Lot</th>
+                <th>Cemetery</th>
+                <th>Section</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.Deeds)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" value="@item.id" name="id" id="id" />
+                        <span class="viewitem">@item.IssueDate
+                        <span class="edititem">
+                            <input type="date" class="form-control-sm" id="issueDate" name="issueDate" value='@item.IssueDate.ToString("yyyy-MM-dd");' />
+                        </span>
+                    </td>
+                    <td>
+                        <span class="viewitem">
+                            @item.LastName1, @item.FirstName1 @item.MiddleName1
+                        </span>
+                        <span class="edititem">
+                            <input type="text" class="form-control-sm" id="lastName1" name="lastName1" value='@item.LastName1' placeholder="Last Name" />
+                            <input type="text" class="form-control-sm" id="firstName1" name="firstName1" value='@item.FirstName1' placeholder="First Name" />
+                            <input type="text" class="form-control-sm" id="middleName1" name="middleName1" value='@item.MiddleName1' placeholder="Middle Name" />
+                        </span>    
+                    </td>
+                    <td>
+                        <span class="viewitem">
+                            @item.LastName2, @item.FirstName2 @item.MiddleName2
+                        </span>
+                        <span class="edititem">
+                            <input type="text" class="form-control-sm" id="lastName2" name="lastName2" value='@item.LastName2' placeholder="Last Name" />
+                            <input type="text" class="form-control-sm" id="firstName2" name="firstName2" value='@item.FirstName2' placeholder="First Name" />
+                            <input type="text" class="form-control-sm" id="middleName2" name="middleName2" value='@item.MiddleName2' placeholder="Middle Name" />
+                        </span>    
+                    </td>
+                    <td>
+                        <span class="viewitem">@item.Lot</span>
+                        <span class="edititem">
+                            <input type="text" class="form-control-sm" id="lot" name="lot" value='@item.Lot' placeholder="Lot" />
+                        </span>
+                    </td>
+                    <td>
+                        <span class="viewitem">
+                            @item.Cemetery.Name
+                        </span>
+                        <span class="edititem">
+                            <select class="form-control-sm" id="cemeteryid" name="cemeteryid">
+                                @foreach(var cemetery in Model.Cemeteries)
+                                {
+                                    @if(cemetery.id == item.CemeteryId)
+                                    {
+                                        <option value='@cemetery.id' selected='selected'>@cemetery.Name</option>
+                                    } else {
+                                        <option value='@cemetery.id'>@cemetery.Name</option>
+                                    }
+                                }
+                            </select>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="viewitem">
+                            @item.Section.Name
+                        </span>
+                        <span class="edititem">
+                            <select class="form-control-sm" id="sectionid" name="sectionid">
+                                @foreach(var sectionItem in Model.Sections)
+                                {
+                                    @if (sectionItem.id == item.SectionId)
+                                    {
+                                        <option value='@sectionItem.id' selected='selected'>@sectionItem.Name</option>
+                                    } else {
+                                        <option value='@sectionItem.id'>@sectionItem.Name</option>
+                                    }
+                                }
+                            </select>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="editbuttons">
+                            <button class="btn-sm btn-success saveButton">Save</button>
+                            &nbsp;
+                            <button class="btn-sm btn-warning cancelButton">Cancel</button>
+                        </span>
+                        <span class="viewbuttons">
+                            <button class="btn-sm btn-outline-success editButton">Edit</button>
+                            &nbsp;
+                            <button class="btn-sm btn-outline-danger deletebutton">Delete</button>
+                        </span>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    <input type="hidden" value="0" name="id" id="id" />
+                    <input type="date" class="form-control-sm" id="issueDate" name="issueDate" />
+                </td>
+                <td>
+                    <input type="text" class="form-control-sm" id="lastName1" name="lastName1" placeholder="Last Name" />
+                    <input type="text" class="form-control-sm" id="firstName1" name="firstName1" placeholder="First Name" />
+                    <input type="text" class="form-control-sm" id="middleName1" name="middleName1" placeholder="Middle Name" />
+                </td>
+                <td>
+                    <input type="text" class="form-control-sm" id="lastName2" name="lastName2" placeholder="Last Name" />
+                    <input type="text" class="form-control-sm" id="firstName2" name="firstName2" placeholder="First Name" />
+                    <input type="text" class="form-control-sm" id="middleName2" name="middleName2" placeholder="Middle Name" />
+                </td>
+                <td>
+                    <input type="text" class="form-control-sm" id="lot" name="lot" placeholder="Lot" />
+                </td>
+                <td>
+                    <select class="form-control-sm" id="cemeteryid" name="cemeteryid">
+                        @foreach(var cemetery in Model.Cemeteries)
+                        {
+                            <option value='@cemetery.id'>@cemetery.Name</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control-sm" id="sectionid" name="sectionid">
+                        @foreach(var sectionItem in Model.Sections)
+                        {
+                                <option value='@sectionItem.id'>@sectionItem.Name</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button class="btn-sm btn-success addButton">Save</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".editButton").click(function(){
+                $(this).parent().parent().find(".editbuttons").show();
+                $(this).parent().parent().find(".viewbuttons").hide();
+                $(this).parent().parent().parent().find(".viewitem").hide();
+                $(this).parent().parent().parent().find(".edititem").show();
+            });
+            $(".cancelButton").click(function(){
+                $(this).parent().parent().find(".editbuttons").hide();
+                $(this).parent().parent().find(".viewbuttons").show();
+                $(this).parent().parent().parent().find(".viewitem").show();
+                $(this).parent().parent().parent().find(".edititem").hide();
+            })
+        };
+    </script>
+}

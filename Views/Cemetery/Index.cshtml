@@ -1,0 +1,134 @@
+@using PagedList.Core;
+@using PagedList.Core.Mvc;
+
+@model StaticPagedList<cemetery.Models.Cemetery>
+@{
+    ViewData["Title"] = "Cemeteries";
+}
+<span class="AntiForge">@Html.AntiForgeryToken()</span>
+<div class="container-fluid">
+    <h1>Cemeteries</h1>
+    @if (Model.Count() > 25)
+    {
+    <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index" asp-controller="Cemetery"></pager>
+    }
+    <table class="table table-responsive table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Google Map URL</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" id="id" name="id" value="@item.id" />
+                        <span id="viewName">@item.Name</span>
+                        <span id="editName" style="display:none;">
+                            <input type="text" class="form-control form-control-sm" id="name" name="name" value="@item.Name" />
+                        </span>
+                    </td>
+                    <td>
+                        <span id="viewGoogleMap">
+                            <a href="@item.GoogleMapUrl" target="_blank">@item.GoogleMapUrl</a>
+                        </span>
+                        <span id="editGoogleMap" style="display: none;">
+                            <input type="text" class="form-control form-control-sm" id="googlemapurl" name="googlemapurl" value="@item.GoogleMapUrl" />
+                        </span>
+                    </td>
+                    <td><a href='#' class="btn-sm btn btn-outline-success editCemetery">Edit</a>&nbsp;&nbsp;<a href='#' class="btn-sm btn btn-outline-danger deleteCemetery">Delete</a><span id="editOptions" style="display: none;"><a href='#' id="saveCemetery" class="btn btn-sm btn-outline-success saveCemetery">Save</a>&nbsp;&nbsp;<a href="#" class="btn btn-sm btn-outline-warning cancelEdit">Cancel</a></span><span id="nonEditOptions">&nbsp;&nbsp;<a href="@item.GoogleMapUrl" target="_blank" class="btn btn-sm btn-outline-secondary">Google Map</a>&nbsp;<a href='/Cemetery/@item.id/Sections' class="btn btn-sm btn-outline-secondary" >Cemetery Sections</a></span></td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    <input type="hidden" id="id" name="id" value="0" />
+                        <span id="editName">
+                            <input type="text" class="form-control form-control-sm" id="name" name="name" value="" placeholder="Cemetery Name" />
+                        </span>
+                    </td>
+                    <td>
+                        <span id="editGoogleMap">
+                            <input type="text" class="form-control form-control-sm" id="googlemapurl" name="googlemapurl" value="" placeholder="Google Map URL" />
+                        </span>
+                    </td>
+                    <td><span id="editOptions"><a href='#' id="saveCemetery" class="btn btn-sm btn-outline-success saveCemetery">Add</a></span></td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".editCemetery").click(function(){
+                $(this).parent().parent().find("#viewName").hide();
+                $(this).parent().parent().find("#editName").show();
+                $(this).parent().parent().find("#viewGoogleMap").hide();
+                $(this).parent().parent().find("#editGoogleMap").show();
+                $(this).hide();
+                $(this).parent().find(".deleteCemetery").hide();
+                $(this).parent().find("#nonEditOptions").hide();
+                $(this).parent().find("#editOptions").show();
+            });
+            $(".deleteCemetery").click(function(){
+                if(confirm("Are you sure you want to delete this cemetery?"))
+                {
+                    let id = $(this).parent().parent().find("#id").val();
+                    let options = {
+                    url: '/Cemetery/'+id,
+                    type: "DELETE",
+                    dataType: "json",
+                    data: {
+                        __RequestVerificationToken: $(".AntiForge" + " input").val()
+                    }   
+                };
+                $.ajax(options)
+                    .done(function(){
+                        location.reload();
+                    })
+                    .fail(function(data){
+                        console.log(data);
+                        alert("Failed to delete cemetery.");
+                    });
+                }
+            });
+            $(".cancelEdit").click(function(){
+                $(this).parent().parent().parent().find("#viewName").show();
+                $(this).parent().parent().parent().find("#editName").hide();
+                $(this).parent().parent().parent().find("#viewGoogleMap").show();
+                $(this).parent().parent().parent().find("#editGoogleMap").hide();
+                $(this).parent().parent().find(".editCemetery").show();
+                $(this).parent().parent().find(".deleteCemetery").show();
+                $(this).parent().parent().find("#nonEditOptions").show();
+                $(this).parent().parent().find("#editOptions").hide();
+            });
+            $(".saveCemetery").click(function(){
+                let id = $(this).parent().parent().parent().find("#id").val();
+                let name = $(this).parent().parent().parent().find("#name").val();
+                let googlemapurl = $(this).parent().parent().parent().find("#googlemapurl").val();
+                let options = {
+                    url: '@Url.Action("EditCemetery","Cemetery")',
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        id: id,
+                        name: name,
+                        googlemapurl: googlemapurl,
+                        __RequestVerificationToken: $(".AntiForge" + " input").val()
+                    }   
+                };
+                $.ajax(options)
+                    .done(function(){
+                        location.reload();
+                    })
+                    .fail(function(data){
+                        console.log(data);
+                        alert("Failed to update cemetery.");
+                    });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,29 @@
+@using PagedList.Core;
+@using PagedList.Core.Mvc;
+
+@model cemetery.Models.SectionsViewModel;
+@{
+    ViewData["Title"] = @Model.Cemetery.Name + " Sections";
+}
+<div class="container-fluid">
+    <h1>@Model.Cemetery.Name Sections</h1>
+    <a href='@Url.Action("Index","Cemetery")' class="btn btn-outline-success">Return to Cemeteries</a>
+    <pager class="pager-container" list="@Model.Sections" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Sections" asp-controller="Cemetery"></pager>
+    <table class="table table-responsive table-striped table-hover">
+        <thead>
+            <th>Name</th>
+            <th>Section Code</th>
+            <th></th>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Sections)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Code</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
